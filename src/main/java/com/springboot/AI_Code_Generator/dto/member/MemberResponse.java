@@ -1,0 +1,15 @@
+package com.springboot.AI_Code_Generator.dto.member;
+
+import com.springboot.AI_Code_Generator.enums.ProjectRole;
+
+import java.time.Instant;
+
+public record MemberResponse(
+        Long userId,
+        String email,
+        String avatarUrl,
+        String name,
+        ProjectRole role,
+        Instant invitedAt
+) {
+}
