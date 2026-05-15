@@ -1,4 +1,14 @@
 package com.springboot.AI_Code_Generator.dto.project;
 
-public record ProjectResponse() {
+import com.springboot.AI_Code_Generator.dto.auth.UserProfileResponse;
+
+import java.time.Instant;
+
+public record ProjectResponse(
+        Long id,
+        String name,
+        Instant createdAt,
+        Instant updatedAt,
+        UserProfileResponse owner
+) {
 }
