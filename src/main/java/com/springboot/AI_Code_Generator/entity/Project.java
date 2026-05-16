@@ -1,6 +1,5 @@
 package com.springboot.AI_Code_Generator.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -32,7 +31,10 @@ public class Project {
     @JoinColumn(name="owner_id", nullable = false) // foreign key column, nullable is false means project must have an owner defined
     User owner;
 
-    Boolean isPublic = false;
+    // this will be ignored by builder if below annotation is not used
+    // Builder expects every field to be handled explicitly
+    @Builder.Default
+    Boolean isPublic = Boolean.FALSE;
 
     @CreationTimestamp
     Instant createdAt;
