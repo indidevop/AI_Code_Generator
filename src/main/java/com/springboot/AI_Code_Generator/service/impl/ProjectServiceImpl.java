@@ -6,6 +6,7 @@ import com.springboot.AI_Code_Generator.dto.project.ProjectSummaryResponse;
 import com.springboot.AI_Code_Generator.entity.Project;
 import com.springboot.AI_Code_Generator.entity.User;
 import com.springboot.AI_Code_Generator.mapper.ProjectMapper;
+import com.springboot.AI_Code_Generator.mapper.ProjectSummaryResponseMapper;
 import com.springboot.AI_Code_Generator.repository.ProjectRepository;
 import com.springboot.AI_Code_Generator.repository.UserRepository;
 import com.springboot.AI_Code_Generator.service.ProjectService;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +28,7 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectRepository projectRepository;
     UserRepository userRepository;
     ProjectMapper projectMapper;
+    ProjectSummaryResponseMapper projectSummaryResponseMapper;
 
     @Override
     public ProjectResponse createProject(Long userId, ProjectRequest request) {
@@ -43,7 +46,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectSummaryResponse> getUserProjects(Long userId) {
-        return List.of();
+        List<Project> projectList = projectRepository.findAllAccessibleByUser(userId);
+
+        List<ProjectSummaryResponse> projectSummaryResponses = new ArrayList<>();
+
+        return projectList.stream().map(projectSummaryResponseMapper::projectToProjectSummaryResponse).toList();
     }
 
     @Override
