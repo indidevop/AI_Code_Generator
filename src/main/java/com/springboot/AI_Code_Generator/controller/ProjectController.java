@@ -3,6 +3,8 @@ package com.springboot.AI_Code_Generator.controller;
 import com.springboot.AI_Code_Generator.dto.project.ProjectRequest;
 import com.springboot.AI_Code_Generator.dto.project.ProjectResponse;
 import com.springboot.AI_Code_Generator.dto.project.ProjectSummaryResponse;
+import com.springboot.AI_Code_Generator.entity.Project;
+import com.springboot.AI_Code_Generator.repository.ProjectRepository;
 import com.springboot.AI_Code_Generator.service.ProjectService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +29,10 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getUserProjects(userId));
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long projectId){
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long id){
         Long userId=1L;
-        return ResponseEntity.ok(projectService.getUserProjectById(projectId, userId));
+        return ResponseEntity.ok(projectService.getUserProjectById(id, userId));
     }
 
     @PostMapping
@@ -40,9 +42,9 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long projectId, @RequestBody ProjectRequest request){
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody ProjectRequest request){
         Long userId=1L;
-        return ResponseEntity.ok(projectService.updateProject(projectId, request, userId));
+        return ResponseEntity.ok(projectService.updateProject(id, request, userId));
     }
 
     @DeleteMapping("/{id}")
