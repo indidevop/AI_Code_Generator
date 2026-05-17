@@ -15,5 +15,5 @@ public interface ProjectService {
 
     ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId);
 
-    ProjectResponse deleteProject(Long projectId, Long userId);
+    void softDelete(Long projectId, Long userId);
 }

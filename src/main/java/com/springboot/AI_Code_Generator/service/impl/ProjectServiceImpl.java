@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,8 +70,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse deleteProject(Long projectId, Long userId) {
-        return null;
+    public void softDelete(Long projectId, Long userId) {
+        Project project=getAccessibleProjectById(projectId, userId);
+
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException("This user is not authorised to delete");
+        }
+
+        project.setDeletedAt(Instant.now());
+        projectRepository.save(project);
     }
 
 
