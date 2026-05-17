@@ -8,8 +8,7 @@ public record ProjectSummaryResponse(
         Long id,
         String name,
         Instant createdAt,
-        Instant updatedAt,
-        UserProfileResponse user
+        Instant updatedAt
 ) {
 }
 
