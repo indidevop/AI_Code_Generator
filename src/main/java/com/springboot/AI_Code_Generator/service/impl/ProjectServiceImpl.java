@@ -32,23 +32,21 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectResponse createProject(Long userId, ProjectRequest request) {
-         User user=userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
 
-         Project p= Project.builder()
-                 .name(request.name())
-                 .owner(user)
-                 .build();
+        Project p = Project.builder()
+                .name(request.name())
+                .owner(user)
+                .build();
 
-         p=projectRepository.save(p);
+        p = projectRepository.save(p);
 
-         return projectMapper.projectToProjectResponse(p);
+        return projectMapper.projectToProjectResponse(p);
     }
 
     @Override
     public List<ProjectSummaryResponse> getUserProjects(Long userId) {
         List<Project> projectList = projectRepository.findAllAccessibleByUser(userId);
-
-        List<ProjectSummaryResponse> projectSummaryResponses = new ArrayList<>();
 
         return projectList.stream().map(projectSummaryResponseMapper::projectToProjectSummaryResponse).toList();
     }
@@ -56,7 +54,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse getUserProjectById(Long projectId, Long userId) {
 
-        Project p = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
+        Project p = getAccessibleProjectById(projectId, userId);
 
         return projectMapper.projectToProjectResponse(p);
     }
@@ -64,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId) {
 
-        Project project = projectRepository.findAccessibleProjectById(projectId,userId).orElseThrow();
+        Project project = getAccessibleProjectById(projectId, userId);
         project.setName(request.name());
         project = projectRepository.save(project);
         return projectMapper.projectToProjectResponse(project);
@@ -74,4 +72,12 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponse deleteProject(Long projectId, Long userId) {
         return null;
     }
+
+
+// INTERNAL METHODS
+
+    private Project getAccessibleProjectById(Long projectId, Long userId) {
+        return projectRepository.findAccessibleProjectById(projectId, userId).orElseThrow();
+    }
+
 }
