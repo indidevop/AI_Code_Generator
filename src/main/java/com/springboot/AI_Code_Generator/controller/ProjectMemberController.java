@@ -22,7 +22,7 @@ public class ProjectMemberController {
     @GetMapping
     public ResponseEntity<List<MemberResponse>> getProjectMembers(@PathVariable Long projectId)
     {
-        Long userId = 2L;
+        Long userId = 1L;
         return ResponseEntity.ok(projectMemberService.getProjectMembers(projectId,userId));
     }
 
