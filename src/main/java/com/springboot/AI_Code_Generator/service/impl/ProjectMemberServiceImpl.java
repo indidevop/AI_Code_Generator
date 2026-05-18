@@ -99,7 +99,24 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public MemberResponse updateMemberRole(Long projectId, Long userId, Long memberId, UpdateMemberRoleRequest request) {
-        return null;
+
+        // Got the project for projectId and userId
+        Project project = getAccessibleProjectById(projectId, userId);
+
+        // Only owner can update
+        if(!project.getOwner().getId().equals(userId))
+        {
+            throw new RuntimeException("Not allowed");
+        }
+
+        // Create projectMember
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);
+        ProjectMember projectMember = projectMemberRepository.findById(projectMemberId).orElseThrow();
+
+        // Set role
+        projectMember.setProjectRole(request.role());
+
+        return memberMapper.projectMemberToMemberResponse(projectMemberRepository.save(projectMember));
     }
 
     @Override
