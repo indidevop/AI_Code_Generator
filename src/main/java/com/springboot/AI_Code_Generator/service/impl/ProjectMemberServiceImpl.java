@@ -58,7 +58,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         // Got the project for projectId and userId
         Project project = getAccessibleProjectById(projectId, userId);
 
-        // Owner cannot be the member again
+        // Only owner can invite
         if(!project.getOwner().getId().equals(userId))
         {
             throw new RuntimeException("Not allowed");
@@ -68,7 +68,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         User invitee = userRepository.findByEmail(request.email()).orElseThrow();
 
         // If email maps to the userId of owner
-        if(!invitee.getId().equals(userId))
+        if(invitee.getId().equals(userId))
         {
             throw new RuntimeException("Cannot invite yourself!");
         }
