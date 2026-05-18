@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -120,8 +121,27 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
-    public MemberResponse deleteMemberRole(Long projectId, Long memberId, Long userId) {
-        return null;
+    public void deleteMemberRole(Long projectId, Long memberId, Long userId) {
+
+        // Got the project for projectId and userId
+        Project project = getAccessibleProjectById(projectId, userId);
+
+        // Only owner can delete
+        if(!project.getOwner().getId().equals(userId))
+        {
+            throw new RuntimeException("Not allowed");
+        }
+
+        // Create projectMemberId
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);
+
+        if(!projectMemberRepository.existsById(projectMemberId))
+        {
+            throw new RuntimeException("Member does not exists");
+        }
+
+        // Remove from DB
+        projectMemberRepository.deleteById(projectMemberId);
     }
 
     // INTERNAL METHODS
