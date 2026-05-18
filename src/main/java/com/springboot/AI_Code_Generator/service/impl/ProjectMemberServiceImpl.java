@@ -5,10 +5,12 @@ import com.springboot.AI_Code_Generator.dto.member.MemberResponse;
 import com.springboot.AI_Code_Generator.dto.member.UpdateMemberRoleRequest;
 import com.springboot.AI_Code_Generator.entity.Project;
 import com.springboot.AI_Code_Generator.entity.ProjectMember;
+import com.springboot.AI_Code_Generator.entity.ProjectMemberId;
 import com.springboot.AI_Code_Generator.entity.User;
 import com.springboot.AI_Code_Generator.mapper.MemberMapper;
 import com.springboot.AI_Code_Generator.repository.ProjectMemberRepository;
 import com.springboot.AI_Code_Generator.repository.ProjectRepository;
+import com.springboot.AI_Code_Generator.repository.UserRepository;
 import com.springboot.AI_Code_Generator.service.ProjectMemberService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +29,10 @@ import java.util.List;
 public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     ProjectRepository projectRepository;
+    ProjectMemberRepository projectMemberRepository;
     MemberMapper memberMapper;
     ProjectMemberRepository memberRepository;
+    UserRepository userRepository;
 
     @Override
     public List<MemberResponse> getProjectMembers(Long projectId, Long userId) {
@@ -49,7 +54,47 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public MemberResponse inviteMember(Long projectId, Long userId, InviteMemberRequest request) {
-        return null;
+
+        // Got the project for projectId and userId
+        Project project = getAccessibleProjectById(projectId, userId);
+
+        // Owner cannot be the member again
+        if(!project.getOwner().getId().equals(userId))
+        {
+            throw new RuntimeException("Not allowed");
+        }
+
+        // Find the user to be invited as member using email
+        User invitee = userRepository.findByEmail(request.email()).orElseThrow();
+
+        // If email maps to the userId of owner
+        if(!invitee.getId().equals(userId))
+        {
+            throw new RuntimeException("Cannot invite yourself!");
+        }
+
+        // Create projectMemberId to provide to the projectMember to be created
+        ProjectMemberId projectMemberId = new ProjectMemberId(projectId,invitee.getId());
+
+        // If projectMember already exists with same id for this project throw exception
+        if(projectMemberRepository.existsById(projectMemberId))
+        {
+            throw new RuntimeException("Member already exists");
+        }
+
+        // Create projectMember
+        ProjectMember projectMember = ProjectMember.builder()
+                .id(projectMemberId)
+                .project(project)
+                .user(invitee)
+                .projectRole(request.role())
+                .invitedAt(Instant.now())
+                .build();
+
+
+        // Save projectMember and return DTO
+        return memberMapper.projectMemberToMemberResponse(projectMemberRepository.save(projectMember));
+
     }
 
     @Override
