@@ -67,7 +67,7 @@ Additional integrations:
 
 ### ER Diagram
 
-![ER Diagram](./docs/er-diagram.png)
+![ER Diagram](./docs/er-diagram.jpg)
 
 ---
 
