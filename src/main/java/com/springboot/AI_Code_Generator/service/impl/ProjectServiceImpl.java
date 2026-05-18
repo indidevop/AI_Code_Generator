@@ -64,6 +64,11 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId) {
 
         Project project = getAccessibleProjectById(projectId, userId);
+
+        if(!project.getOwner().getId().equals(userId)){
+            throw new RuntimeException("This user is not authorised to update");
+        }
+
         project.setName(request.name());
         project = projectRepository.save(project);
         return projectMapper.projectToProjectResponse(project);
