@@ -5,6 +5,7 @@ import com.springboot.AI_Code_Generator.dto.project.ProjectResponse;
 import com.springboot.AI_Code_Generator.dto.project.ProjectSummaryResponse;
 import com.springboot.AI_Code_Generator.entity.Project;
 import com.springboot.AI_Code_Generator.entity.User;
+import com.springboot.AI_Code_Generator.error.ResourceNotFoundException;
 import com.springboot.AI_Code_Generator.mapper.ProjectMapper;
 import com.springboot.AI_Code_Generator.mapper.ProjectSummaryResponseMapper;
 import com.springboot.AI_Code_Generator.repository.ProjectRepository;
@@ -90,7 +91,8 @@ public class ProjectServiceImpl implements ProjectService {
 // INTERNAL METHODS
 
     private Project getAccessibleProjectById(Long projectId, Long userId) {
-        return projectRepository.findAccessibleProjectById(projectId, userId).orElseThrow();
+        return projectRepository.findAccessibleProjectById(projectId, userId)
+                .orElseThrow(()-> new ResourceNotFoundException("Project", projectId.toString()));
     }
 
 }

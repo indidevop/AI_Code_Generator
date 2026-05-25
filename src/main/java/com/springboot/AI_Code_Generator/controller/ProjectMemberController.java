@@ -5,6 +5,7 @@ import com.springboot.AI_Code_Generator.dto.member.MemberResponse;
 import com.springboot.AI_Code_Generator.dto.member.UpdateMemberRoleRequest;
 import com.springboot.AI_Code_Generator.entity.ProjectMember;
 import com.springboot.AI_Code_Generator.service.ProjectMemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class ProjectMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponse> inviteMember(@PathVariable Long projectId, @RequestBody InviteMemberRequest request){
+    public ResponseEntity<MemberResponse> inviteMember(@PathVariable Long projectId, @RequestBody @Valid InviteMemberRequest request){
         Long userId=1L;
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 projectMemberService.inviteMember(projectId, userId, request));
@@ -35,7 +36,7 @@ public class ProjectMemberController {
     }
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<MemberResponse> updateMemberRole(@PathVariable Long projectId, @RequestBody UpdateMemberRoleRequest request, @PathVariable Long memberId){
+    public ResponseEntity<MemberResponse> updateMemberRole(@PathVariable Long projectId, @RequestBody @Valid UpdateMemberRoleRequest request, @PathVariable Long memberId){
         Long userId=1L;
         return ResponseEntity.ok(projectMemberService.updateMemberRole(projectId, userId, memberId, request));
     }
