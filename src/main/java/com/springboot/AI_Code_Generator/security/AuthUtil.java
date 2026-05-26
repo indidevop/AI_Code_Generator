@@ -1,6 +1,7 @@
 package com.springboot.AI_Code_Generator.security;
 
 import com.springboot.AI_Code_Generator.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
@@ -30,5 +32,19 @@ public class AuthUtil {
 
     private SecretKey encodeSecretKey(){
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public JWTUserPrinciple verifyAccessToken(String token)
+    {
+        Claims claims = Jwts.parser()
+                .verifyWith(encodeSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        Long userId = Long.parseLong(claims.get("userId",String.class));
+        String username = claims.getSubject();
+
+        return new JWTUserPrinciple(userId, username, new ArrayList<>());
     }
 }
