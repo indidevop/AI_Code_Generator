@@ -15,7 +15,12 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "projects")
+@Table(name = "projects",
+indexes = {
+        // this index will be used when first search is based on updated at then deleted at
+        @Index(name = "idx_projects_updated_at_desc", columnList = "updated_at DESC, deleted_at"),
+        @Index(name="idx_projects_deleted_at", columnList = "deleted_at")
+})
 public class Project {
 
     @Id
