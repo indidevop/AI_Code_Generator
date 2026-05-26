@@ -39,20 +39,24 @@ public class AuthServiceImpl implements AuthService {
         );
 
         User newUser = userMapper.signupRequestToUser(request);
-        newUser.setPasswordHashed(passwordEncoder.encode(request.password()));
+        newUser.setPassword(passwordEncoder.encode(request.password()));
 
         newUser = userRepository.save(newUser);
 
         String accessToken = authUtil.generateJWTAccessToken(newUser);
-
         return new AuthResponse(accessToken, userMapper.userToUserProfileResponse(newUser));
     }
 
     @Override
     public AuthResponse login(LoginRequest request) {
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(),request.password())
-        );
-        return null;
+                new UsernamePasswordAuthenticationToken(request.username(),request.password()));
+
+        User userTryingToLogin = (User) authentication.getPrincipal();
+
+        String accessToken = authUtil.generateJWTAccessToken(userTryingToLogin);
+
+        return new AuthResponse(accessToken, userMapper.userToUserProfileResponse(userTryingToLogin));
     }
 }

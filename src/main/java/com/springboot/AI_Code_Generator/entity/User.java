@@ -4,9 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
+@ToString
 @Getter
 @Setter
 @Entity
@@ -14,15 +20,15 @@ import java.time.Instant;
 @NoArgsConstructor
 @Builder
 @Table(name="users")
-public class User {
+public class User implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
     private String name;
-    private String passwordHashed;
+    private String username;
+    private String password;
     private String avatarUrl;
 
 
@@ -34,4 +40,8 @@ public class User {
 
     private Instant deletedAt;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
 }
