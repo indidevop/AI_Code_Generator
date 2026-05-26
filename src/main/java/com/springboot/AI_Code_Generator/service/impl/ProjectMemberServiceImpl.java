@@ -38,19 +38,12 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public List<MemberResponse> getProjectMembers(Long projectId, Long userId) {
 
-        Project project = getAccessibleProjectById(projectId, userId);
-        User owner = project.getOwner();
+//        Project project = getAccessibleProjectById(projectId, userId);
 
-        List<MemberResponse> returnList = new ArrayList<>();
-        returnList.add(memberMapper.userToMemberResponseFromOwner(owner));
-
-        returnList.addAll(
-                memberRepository.findByIdProjectId(projectId)
+        return memberRepository.findByIdProjectId(projectId)
                         .stream()
                         .map((projectMember) -> memberMapper.projectMemberToMemberResponse(projectMember))
-                        .toList());
-
-        return returnList;
+                        .toList();
     }
 
     @Override
@@ -60,13 +53,13 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         Project project = getAccessibleProjectById(projectId, userId);
 
         // Only owner can invite
-        if(!project.getOwner().getId().equals(userId))
-        {
-            throw new RuntimeException("Not allowed");
-        }
+//        if(!project.getOwner().getId().equals(userId))
+//        {
+//            throw new RuntimeException("Not allowed");
+//        }
 
         // Find the user to be invited as member using email
-        User invitee = userRepository.findByEmail(request.email()).orElseThrow();
+        User invitee = userRepository.findByUsername(request.username()).orElseThrow();
 
         // If email maps to the userId of owner
         if(invitee.getId().equals(userId))
@@ -105,10 +98,10 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         Project project = getAccessibleProjectById(projectId, userId);
 
         // Only owner can update
-        if(!project.getOwner().getId().equals(userId))
-        {
-            throw new RuntimeException("Not allowed");
-        }
+//        if(!project.getOwner().getId().equals(userId))
+//        {
+//            throw new RuntimeException("Not allowed");
+//        }
 
         // Create projectMember
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);
@@ -127,10 +120,10 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         Project project = getAccessibleProjectById(projectId, userId);
 
         // Only owner can delete
-        if(!project.getOwner().getId().equals(userId))
-        {
-            throw new RuntimeException("Not allowed");
-        }
+//        if(!project.getOwner().getId().equals(userId))
+//        {
+//            throw new RuntimeException("Not allowed");
+//        }
 
         // Create projectMemberId
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId,memberId);

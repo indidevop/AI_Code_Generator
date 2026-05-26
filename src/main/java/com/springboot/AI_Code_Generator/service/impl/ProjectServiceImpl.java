@@ -4,10 +4,14 @@ import com.springboot.AI_Code_Generator.dto.project.ProjectRequest;
 import com.springboot.AI_Code_Generator.dto.project.ProjectResponse;
 import com.springboot.AI_Code_Generator.dto.project.ProjectSummaryResponse;
 import com.springboot.AI_Code_Generator.entity.Project;
+import com.springboot.AI_Code_Generator.entity.ProjectMember;
+import com.springboot.AI_Code_Generator.entity.ProjectMemberId;
 import com.springboot.AI_Code_Generator.entity.User;
+import com.springboot.AI_Code_Generator.enums.ProjectRole;
 import com.springboot.AI_Code_Generator.error.ResourceNotFoundException;
 import com.springboot.AI_Code_Generator.mapper.ProjectMapper;
 import com.springboot.AI_Code_Generator.mapper.ProjectSummaryResponseMapper;
+import com.springboot.AI_Code_Generator.repository.ProjectMemberRepository;
 import com.springboot.AI_Code_Generator.repository.ProjectRepository;
 import com.springboot.AI_Code_Generator.repository.UserRepository;
 import com.springboot.AI_Code_Generator.service.ProjectService;
@@ -31,17 +35,30 @@ public class ProjectServiceImpl implements ProjectService {
     UserRepository userRepository;
     ProjectMapper projectMapper;
     ProjectSummaryResponseMapper projectSummaryResponseMapper;
+    ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectResponse createProject(Long userId, ProjectRequest request) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User owner = userRepository.findById(userId).orElseThrow();
 
         Project p = Project.builder()
                 .name(request.name())
-                .owner(user)
+                .isPublic(false)
+                .build();
+        p = projectRepository.save(p);
+
+        ProjectMemberId projectmemberId = new ProjectMemberId(p.getId(),owner.getId());
+
+        ProjectMember projectMember = ProjectMember.builder()
+                .id(projectmemberId)
+                .projectRole(ProjectRole.OWNER)
+                .user(owner)
+                .acceptedAt(Instant.now())
+                .invitedAt(Instant.now())
+                .project(p)
                 .build();
 
-        p = projectRepository.save(p);
+        projectMemberRepository.save(projectMember);
 
         return projectMapper.projectToProjectResponse(p);
     }
@@ -66,9 +83,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project project = getAccessibleProjectById(projectId, userId);
 
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("This user is not authorised to update");
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException("This user is not authorised to update");
+//        }
 
         project.setName(request.name());
         project = projectRepository.save(project);
@@ -79,9 +96,9 @@ public class ProjectServiceImpl implements ProjectService {
     public void softDelete(Long projectId, Long userId) {
         Project project=getAccessibleProjectById(projectId, userId);
 
-        if(!project.getOwner().getId().equals(userId)){
-            throw new RuntimeException("This user is not authorised to delete");
-        }
+//        if(!project.getOwner().getId().equals(userId)){
+//            throw new RuntimeException("This user is not authorised to delete");
+//        }
 
         project.setDeletedAt(Instant.now());
         projectRepository.save(project);
