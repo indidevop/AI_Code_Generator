@@ -14,6 +14,7 @@ import com.springboot.AI_Code_Generator.mapper.ProjectSummaryResponseMapper;
 import com.springboot.AI_Code_Generator.repository.ProjectMemberRepository;
 import com.springboot.AI_Code_Generator.repository.ProjectRepository;
 import com.springboot.AI_Code_Generator.repository.UserRepository;
+import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.ProjectService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -36,10 +37,19 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectMapper projectMapper;
     ProjectSummaryResponseMapper projectSummaryResponseMapper;
     ProjectMemberRepository projectMemberRepository;
+    AuthUtil authUtil;
 
     @Override
-    public ProjectResponse createProject(Long userId, ProjectRequest request) {
-        User owner = userRepository.findById(userId).orElseThrow();
+    public ProjectResponse createProject(ProjectRequest request) {
+
+        Long userId = authUtil.getCurrentUserId();
+
+        // User owner = userRepository.findById(userId).orElseThrow();
+
+        // This query will not make DB call
+        // owner will only have userId set, other field are not required
+        // Works only in Transactional context
+        User owner = userRepository.getReferenceById(userId);
 
         Project p = Project.builder()
                 .name(request.name())
@@ -64,22 +74,29 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectSummaryResponse> getUserProjects(Long userId) {
+    public List<ProjectSummaryResponse> getUserProjects() {
+
+        Long userId = authUtil.getCurrentUserId();
+
         List<Project> projectList = projectRepository.findAllAccessibleByUser(userId);
 
         return projectList.stream().map(projectSummaryResponseMapper::projectToProjectSummaryResponse).toList();
     }
 
     @Override
-    public ProjectResponse getUserProjectById(Long projectId, Long userId) {
+    public ProjectResponse getUserProjectById(Long projectId) {
 
-        Project p = getAccessibleProjectById(projectId, userId);
+        Long userId = authUtil.getCurrentUserId();
+
+        Project p = getAccessibleProjectById(userId, projectId);
 
         return projectMapper.projectToProjectResponse(p);
     }
 
     @Override
-    public ProjectResponse updateProject(Long projectId, ProjectRequest request, Long userId) {
+    public ProjectResponse updateProject(Long projectId, ProjectRequest request) {
+
+        Long userId = authUtil.getCurrentUserId();
 
         Project project = getAccessibleProjectById(projectId, userId);
 
@@ -93,7 +110,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void softDelete(Long projectId, Long userId) {
+    public void softDelete(Long projectId) {
+
+        Long userId = authUtil.getCurrentUserId();
+
         Project project=getAccessibleProjectById(projectId, userId);
 
 //        if(!project.getOwner().getId().equals(userId)){
