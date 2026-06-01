@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -36,6 +37,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     UserRepository userRepository;
 
     @Override
+    @PreAuthorize("@security.canViewMembers(#projectId)")
     public List<MemberResponse> getProjectMembers(Long projectId, Long userId) {
 
 //        Project project = getAccessibleProjectById(projectId, userId);
@@ -47,6 +49,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public MemberResponse inviteMember(Long projectId, Long userId, InviteMemberRequest request) {
 
         // Got the project for projectId and userId
@@ -92,6 +95,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public MemberResponse updateMemberRole(Long projectId, Long userId, Long memberId, UpdateMemberRoleRequest request) {
 
         // Got the project for projectId and userId
@@ -114,6 +118,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public void deleteMemberRole(Long projectId, Long memberId, Long userId) {
 
         // Got the project for projectId and userId
