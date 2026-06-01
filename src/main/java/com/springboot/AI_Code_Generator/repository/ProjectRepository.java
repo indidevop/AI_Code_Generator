@@ -27,11 +27,11 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     @Query(
             """
             SELECT p FROM Project p
-                        WHERE p.id=:projectid AND p.deletedAt IS NULL
+                        WHERE p.id=:projectId AND p.deletedAt IS NULL
                                     AND EXISTS(
                             SELECT 1 FROM ProjectMember pm
                                     WHERE pm.id.userId = :userId
-                                            AND pm.id.projectId = p.projectId
+                                            AND pm.id.projectId = :projectId
                             )
             """
     )

@@ -20,6 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -84,11 +85,14 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    // This method checks if user is member of that project
+    // Before coming to service layer user authorization must be checked
+    @PreAuthorize("@security.canViewProject(#projectId)") // security is the custom bean name we created for SecurityExpressions, passing projectId to canViewProject method
     public ProjectResponse getUserProjectById(Long projectId) {
 
         Long userId = authUtil.getCurrentUserId();
 
-        Project p = getAccessibleProjectById(userId, projectId);
+        Project p = getAccessibleProjectById(projectId, userId);
 
         return projectMapper.projectToProjectResponse(p);
     }
@@ -129,7 +133,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private Project getAccessibleProjectById(Long projectId, Long userId) {
         return projectRepository.findAccessibleProjectById(projectId, userId)
-                .orElseThrow(()-> new ResourceNotFoundException("Project", projectId.toString()));
+                .orElseThrow(()-> new ResourceNotFoundException("", projectId.toString()));
     }
 
 }

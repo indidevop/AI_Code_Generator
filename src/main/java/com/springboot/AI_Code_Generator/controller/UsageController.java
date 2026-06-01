@@ -2,6 +2,7 @@ package com.springboot.AI_Code_Generator.controller;
 
 import com.springboot.AI_Code_Generator.dto.subscription.PlanLimitsResponse;
 import com.springboot.AI_Code_Generator.dto.subscription.UsageTodayResponse;
+import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.UsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsageController {
 
     private final UsageService usageService;
+    private final AuthUtil authUtil;
 
     @GetMapping("/today")
     public ResponseEntity<UsageTodayResponse> getUsageForToday(){
-        Long userId=1L;
+        Long userId=authUtil.getCurrentUserId();
         return ResponseEntity.ok(usageService.getUsageForToday(userId));
     }
 
     @GetMapping("/limits")
     public ResponseEntity<PlanLimitsResponse> getPlanLimits(){
-        Long userId=1L;
+        Long userId=authUtil.getCurrentUserId();
         return ResponseEntity.ok(usageService.getPlanLimits(userId));
     }
 

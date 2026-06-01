@@ -2,6 +2,7 @@ package com.springboot.AI_Code_Generator.controller;
 
 import com.springboot.AI_Code_Generator.dto.file.FileContentResponse;
 import com.springboot.AI_Code_Generator.dto.file.FileNode;
+import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +18,18 @@ import java.util.List;
 @RequestMapping("/api/projects/{projectId}/files")
 public class FileController {
     private final FileService fileService;
+    private final AuthUtil authUtil;
 
     @GetMapping
     public ResponseEntity<List<FileNode>> getFileTree(@PathVariable Long projectId){
-        Long userId=1L;
+        Long userId=authUtil.getCurrentUserId();
         return ResponseEntity.ok(fileService.getFileTree(projectId,userId));
     }
 
     @GetMapping("/{*path}")
     public ResponseEntity<FileContentResponse> getFile(@PathVariable Long projectId, @PathVariable String path)
     {
-        Long userId=2L;
+        Long userId=authUtil.getCurrentUserId();
 
         return ResponseEntity.ok(fileService.getFile(projectId, userId, path));
     }
