@@ -20,5 +20,9 @@ spring:
 jwt:
   secret-key: ${JWT_SECRET}
 
+stripe:
+  secret: ${STRIPE_SECRET}
 
+client:
+  url: ${CLIENT_URL}
 

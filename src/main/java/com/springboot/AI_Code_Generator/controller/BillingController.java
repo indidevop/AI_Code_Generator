@@ -2,6 +2,7 @@ package com.springboot.AI_Code_Generator.controller;
 
 import com.springboot.AI_Code_Generator.dto.subscription.*;
 import com.springboot.AI_Code_Generator.security.AuthUtil;
+import com.springboot.AI_Code_Generator.service.PaymentProcessor;
 import com.springboot.AI_Code_Generator.service.PlanService;
 import com.springboot.AI_Code_Generator.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 public class BillingController {
     private final PlanService planService;
     private final SubscriptionService subscriptionService;
+    private final PaymentProcessor paymentProcessor;
     private final AuthUtil authUtil;
 
     @GetMapping("/api/plans")
@@ -32,15 +34,16 @@ public class BillingController {
         return ResponseEntity.ok(subscriptionService.getCurrentSubscription(userId));
     }
 
-    @PostMapping("/api/stripe/checkout")
+    // generates checkout response
+    @PostMapping("/api/payments/checkout")
     public ResponseEntity<CheckoutResponse> createCheckoutResponse(@RequestBody CheckoutRequest request){
-        Long userId=authUtil.getCurrentUserId();
-        return ResponseEntity.ok(subscriptionService.createCheckoutSessionUrl(request,userId));
+        return ResponseEntity.ok(paymentProcessor.createCheckoutSessionUrl(request));
     }
 
-    @PostMapping("/api/stripe/portal")
+    // opens portal
+    @PostMapping("/api/payments/portal")
     public ResponseEntity<PortalResponse> openCustomerPortal(){
         Long userId = authUtil.getCurrentUserId();
-        return ResponseEntity.ok(subscriptionService.openCustomerPortal(userId));
+        return ResponseEntity.ok(paymentProcessor.openCustomerPortal(userId));
     }
 }
