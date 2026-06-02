@@ -4,8 +4,10 @@ import com.springboot.AI_Code_Generator.dto.subscription.CheckoutRequest;
 import com.springboot.AI_Code_Generator.dto.subscription.CheckoutResponse;
 import com.springboot.AI_Code_Generator.dto.subscription.PortalResponse;
 import com.springboot.AI_Code_Generator.entity.Plan;
+import com.springboot.AI_Code_Generator.entity.User;
 import com.springboot.AI_Code_Generator.error.ResourceNotFoundException;
 import com.springboot.AI_Code_Generator.repository.PlanRepository;
+import com.springboot.AI_Code_Generator.repository.UserRepository;
 import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.PaymentProcessor;
 import com.stripe.exception.StripeException;
@@ -23,6 +25,7 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
 
     private final AuthUtil authUtil;
     private final PlanRepository planRepository;
+    private final UserRepository userRepository;
 
     @Value("${CLIENT_URL}")
     private String frontend_domain;
@@ -31,11 +34,15 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
     @Override
     public CheckoutResponse createCheckoutSessionUrl(CheckoutRequest request) {
 
+        try {
         Long currentUserId = authUtil.getCurrentUserId();
+        User customer = userRepository.findById(currentUserId).orElseThrow(()->{
+            return new ResourceNotFoundException("user",currentUserId.toString());
+        });
         Plan plan = planRepository.findById(request.planId())
                 .orElseThrow(()-> new ResourceNotFoundException("Plan",request.planId().toString()));
 
-        SessionCreateParams params = SessionCreateParams.builder()
+        var params = SessionCreateParams.builder()
                 .addLineItem(
                         SessionCreateParams.LineItem.builder().setPrice(plan.getStripePriceId()).setQuantity(1L).build())
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
@@ -49,12 +56,20 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
                 .setSuccessUrl(frontend_domain + "/success.html?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(frontend_domain + "/cancel.html")
                 .putMetadata("userId",currentUserId.toString())
-                .putMetadata("planId",plan.getId().toString())
-                .build();
+                .putMetadata("planId",plan.getId().toString());
 
-        try {
+            // If customer is not first time payer this will tell stripe to not create new customer id
+            String stripeCustomerId = customer.getStripeCustomerId();
+
+            if(stripeCustomerId == null || stripeCustomerId.isEmpty())
+            {
+                params.setCustomerEmail(customer.getUsername());
+            }else{
+                params.setCustomer(stripeCustomerId);
+            }
+
             // SDK will call API
-            Session session = Session.create(params);
+            Session session = Session.create(params.build());
 
             return new CheckoutResponse(session.getUrl());
 
