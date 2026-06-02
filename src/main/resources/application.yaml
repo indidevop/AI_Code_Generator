@@ -21,7 +21,10 @@ jwt:
   secret-key: ${JWT_SECRET}
 
 stripe:
-  secret: ${STRIPE_SECRET}
+  api:
+    secret: ${STRIPE_SECRET}
+  webhook:
+    secret: ${WEBHOOK_SECRET}
 
 client:
   url: ${CLIENT_URL}

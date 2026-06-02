@@ -15,12 +15,17 @@ import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StripePaymentProcessorImpl implements PaymentProcessor {
 
     private final AuthUtil authUtil;
@@ -81,6 +86,20 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
 
     @Override
     public PortalResponse openCustomerPortal(Long userId) {
-        return null;
+       return null;
+    }
+
+    @Override
+    public void handleWebhookEvent(String type, StripeObject stripeObject, Map<String, String> metadata) {
+        log.debug("Handling stripe event: {}", type);
+
+//        switch (type) {
+//            case "checkout.session.completed" -> handleCheckoutSessionCompleted((Session) stripeObject, metadata); // one-time, on checkout completed
+//            case "customer.subscription.updated" -> handleCustomerSubscriptionUpdated((Subscription) stripeObject); // when user cancels, upgrades or any updates
+//            case "customer.subscription.deleted" -> handleCustomerSubscriptionDeleted((Subscription) stripeObject); // when subscription ends, revoke the access
+//            case "invoice.paid" -> handleInvoicePaid((Invoice) stripeObject); // when invoice is paid
+//            case "invoice.payment_failed" -> handleInvoicePaymentFailed((Invoice) stripeObject); // when invoice is not paid, mark as PAST_DUE
+//            default -> log.debug("Ignoring the event: {}", type);
+//        }
     }
 }
