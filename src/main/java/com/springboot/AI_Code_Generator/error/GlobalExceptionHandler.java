@@ -1,6 +1,7 @@
 package com.springboot.AI_Code_Generator.error;
 
 
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 fieldErrorList);
 
+        log.error(apiError.toString(), e);
+        return ResponseEntity.status(apiError.status()).body(apiError);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiError> jwtExceptionHandler(JwtException e){
+        ApiError apiError = new ApiError(
+                "JWT token expired/invalid"+" - "+e.getMessage()
+                ,HttpStatus.UNAUTHORIZED);
         log.error(apiError.toString(), e);
         return ResponseEntity.status(apiError.status()).body(apiError);
     }
