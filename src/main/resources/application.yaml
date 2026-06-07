@@ -29,3 +29,7 @@ stripe:
 client:
   url: ${CLIENT_URL}
 
+#logging:
+#  level:
+#    root: DEBUG
+

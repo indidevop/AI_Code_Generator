@@ -1,7 +1,6 @@
 package com.springboot.AI_Code_Generator.security;
 
 import com.springboot.AI_Code_Generator.enums.ProjectPermission;
-import com.springboot.AI_Code_Generator.enums.ProjectRole;
 import com.springboot.AI_Code_Generator.repository.ProjectMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
