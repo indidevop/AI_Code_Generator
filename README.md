@@ -59,11 +59,22 @@ Controller → Service → Repository → Database
 
 ## 🗄️ Database Design
 
-### ER Diagram
-
-![ER Diagram](./docs/er-diagram.jpg)
+(./docs/er-diagram.jpg)
 
 ---
+
+## 🔑 Authnetication using JWT
+
+(./docs/jwt.webp)
+
+---
+
+## 🪪 Authorization
+
+(./docs/granular.svg)
+
+---
+
 
 ## 📁 Repository Structure
 
@@ -72,6 +83,7 @@ src/
  ├── main/
  │   ├── java/
  │   │   └── com.springboot.AI_Code_Generator/
+ │   │       ├── config/        # Confguration files
  │   │       ├── controller/    # REST Controllers
  │   │       ├── dto/           # Request & Response DTOs
  │   │       ├── entity/        # JPA Entities
@@ -79,6 +91,8 @@ src/
  │   │       ├── mapper/        # MapStruct Mappers
  │   │       ├── repository/    # Spring Data JPA Repositories
  │   │       ├── service/       # Business Logic Layer
+ │   │       ├── error/         # Custom exception handlers
+ │   │       ├── security/      # Authetication, Authorization, JWT
  │   │       └── AiCodeGeneratorApplication.java
  │   │
  │   └── resources/
@@ -95,27 +109,44 @@ src/
 
 ### 📂 Project API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/project` | Retrieve all projects for a user |
-| GET | `/api/project/{id}` | Retrieve project using ID |
-| POST | `/api/project` | Create a new project |
-| PATCH | `/api/project/{id}` | Update project details |
-| DELETE | `/api/project/{id}` | Soft delete a project |
+| Method | Endpoint | Description | Requires authentication? |
+|--------|----------|-------------|--------------------------|
+| GET | `/api/project` | Retrieve all projects for a user | Yes |
+| GET | `/api/project/{id}` | Retrieve project using ID | Yes |
+| POST | `/api/project` | Create a new project | Yes |
+| PATCH | `/api/project/{id}` | Update project details | Yes |
+| DELETE | `/api/project/{id}` | Soft delete a project | Yes |
 
 ---
 
 ### 👥 Project Member API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/projects/{projectId}/members` | Retrieve all members associated with a project |
-| POST | `/api/projects/{projectId}/members` | Invite a user to join the project |
-| PATCH | `/api/projects/{projectId}/members/{memberId}` | Update a member's role in the project |
-| DELETE | `/api/projects/{projectId}/members/{memberId}` | Remove a member from the project |
+| Method | Endpoint | Description | Requires authentication? |
+|--------|----------|-------------|--------------------------|
+| GET | `/api/projects/{projectId}/members` | Retrieve all members associated with a project | Yes |
+| POST | `/api/projects/{projectId}/members` | Invite a user to join the project | Yes |
+| PATCH | `/api/projects/{projectId}/members/{memberId}` | Update a member's role in the project | Yes |
+| DELETE | `/api/projects/{projectId}/members/{memberId}` | Remove a member from the project | Yes |
 
 ---
 
+### 🔒 Auth API Endpoints
+
+| Method | Endpoint | Description | Requires authentication? |
+|--------|----------|-------------|--------------------------|
+| POST | `/api/auth/signup` | New user signup | No |
+| POST | `/api/auth/signup` | User login, return JWT token if user is authenticated successfully | No |
+
+---
+
+### 💵 Billing API Endpoints
+
+| Method | Endpoint | Description | Requires authentication? |
+|--------|----------|-------------|--------------------------|
+| POST | `/api/payments/checkout` | Generates Stripe checkout session | Yes |
+| POST | `/api/payments/portal` | Open Stripe customer portal | Yes |
+
+---
 ```bash
 # More endpoints will be added as the development progresses.
 ```
@@ -160,6 +191,9 @@ Current Progress:
 - ✅ Database Modeling
 - ✅ Project APIs
 - ✅ Project Member APIs
+- ✅ Authentication with JWT
+- ✅ Authorization (Granular)
+- ✅ Stripe payment gateway integration
 
 ---
 
