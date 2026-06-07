@@ -55,26 +55,24 @@ Controller → Service → Repository → Database
 - 💳 Stripe for billing/subscriptions
 - ⚡ Redis for caching
 
----
 
 ## 🗄️ Database Design
 
-(./docs/er-diagram.jpg)
+![Database ER Diagram](./docs/er-diagram.jpg)
 
 ---
 
-## 🔑 Authnetication using JWT
+## 🔑 Authentication using JWT
 
-(./docs/jwt.webp)
+![JWT Authentication Flow](./docs/jwt.webp)
 
 ---
 
 ## 🪪 Authorization
 
-(./docs/granular.svg)
+![Granular Authorization](./docs/granular.svg)
 
 ---
-
 
 ## 📁 Repository Structure
 
