@@ -9,4 +9,6 @@ public interface FileService {
     List<FileNode> getFileTree(Long projectId, Long userId);
 
     FileContentResponse getFile(Long projectId, Long userId, String path);
+
+    void saveFile(Long projectId, String filePath, String fileContent);
 }

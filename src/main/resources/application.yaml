@@ -16,6 +16,15 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
+  ai:
+    openai:
+      api-key: ${OPEN_ROUTER}
+      base-url: https://openrouter.ai/api/v1
+      chat:
+        options:
+          model: nvidia/nemotron-3.5-content-safety:free
+          temperature: 0.0
+
 
 jwt:
   secret-key: ${JWT_SECRET}
@@ -29,7 +38,8 @@ stripe:
 client:
   url: ${CLIENT_URL}
 
-#logging:
-#  level:
-#    root: DEBUG
+logging:
+  level:
+    org.springframework.ai:
+      chat.client: DEBUG
 
