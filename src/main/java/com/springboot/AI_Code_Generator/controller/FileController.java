@@ -1,7 +1,7 @@
 package com.springboot.AI_Code_Generator.controller;
 
 import com.springboot.AI_Code_Generator.dto.file.FileContentResponse;
-import com.springboot.AI_Code_Generator.dto.file.FileNode;
+import com.springboot.AI_Code_Generator.dto.project.FileNode;
 import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.FileService;
 import lombok.RequiredArgsConstructor;

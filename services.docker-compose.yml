@@ -1,0 +1,34 @@
+
+services:
+
+  pgvector:
+    image: pgvector/pgvector:0.8.2-pg18-trixie
+    container_name: ${PG_CONTAINER}
+    user: root
+    environment:
+      POSTGRES_DB: ${PG_VECTOR_DB}
+      POSTGRES_USER: ${PG_VECTOR_USER}
+      POSTGRES_PASSWORD: ${PG_VECTOR_PWD}
+    ports:
+      - "9010:5432"
+    volumes:
+      - pgvector-data:/var/lib/postgresql
+    restart: unless-stopped
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: minio-AICodeGenerator
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PWD}
+    ports:
+      - "9000:9000"    # API
+      - "9001:9001"    # Console
+    volumes:
+      - minio-data:/data
+    restart: unless-stopped
+
+volumes:
+  minio-data:
+  pgvector-data:

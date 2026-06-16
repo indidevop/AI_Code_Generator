@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
+@Entity
 @Getter
 @Setter
 @Table(name="project_files")

@@ -82,10 +82,11 @@ public class StripePaymentProcessorImpl implements PaymentProcessor {
 
             // SDK will call API
             Session session = Session.create(params.build());
-
+            log.info(session.getUrl());
             return new CheckoutResponse(session.getUrl());
 
-        } catch (StripeException e) {
+        } catch (Exception e) {
+            log.info("Error creating session "+e);
             throw new RuntimeException(e);
         }
 
