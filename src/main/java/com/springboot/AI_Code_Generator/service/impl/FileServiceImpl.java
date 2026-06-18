@@ -37,14 +37,14 @@ public class FileServiceImpl implements FileService {
     private String projectBucket;
 
     @Override
-    public List<FileNode> getFileTree(Long projectId, Long userId) {
+    public List<FileNode> getFileTree(Long projectId) {
 
         List<ProjectFile> filesList = projectFileRepository.findByProjectId(projectId);
         return fileNodeMapper.toListOfFileNode(filesList);
     }
 
     @Override
-    public FileContentResponse getFile(Long projectId, Long userId, String path) {
+    public FileContentResponse getFileContent(Long projectId, Long userId, String path) {
         return null;
     }
 

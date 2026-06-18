@@ -22,7 +22,7 @@ spring:
       base-url: https://openrouter.ai/api/v1
       chat:
         options:
-          model: openai/gpt-oss-20b:free
+          model: poolside/laguna-xs.2:free
           temperature: 0.0
 
 
@@ -42,6 +42,8 @@ logging:
   level:
     org.springframework.ai:
       chat.client: DEBUG
+    com.springboot.AI_Code_Generator: DEBUG
+    org.springframework.security: DEBUG
 
 minio:
   url: http://localhost:9000          # or minio:9000 if inside docker network

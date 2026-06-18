@@ -4,7 +4,9 @@ import com.springboot.AI_Code_Generator.enums.ProjectPermission;
 import com.springboot.AI_Code_Generator.repository.ProjectMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component("security")
 @RequiredArgsConstructor
 public class SecurityExpressions {
@@ -18,6 +20,7 @@ public class SecurityExpressions {
     }
 
     public boolean canEditProject(Long projectId){
+        log.info("Can edit check");
         return hasPermission(projectId,ProjectPermission.EDIT);
     }
 

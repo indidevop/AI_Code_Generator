@@ -26,33 +26,37 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        try{
-        log.info("Incoming request:"+request.getRequestURI());
-     final String tokenFromHeader = request.getHeader("Authorization");
+        try {
+//            log.info("Incoming request: {} {} from {} userAgent={} auth={}",
+//                    request.getMethod(),
+//                    request.getRequestURI(),
+//                    request.getRemoteAddr(),
+//                    request.getHeader("User-Agent"),
+//                    request.getHeader("Authorization"));
+            final String tokenFromHeader = request.getHeader("Authorization");
 
-     // If token is not present in header
-     if(tokenFromHeader==null || !tokenFromHeader.startsWith("Bearer"))
-     {
-         filterChain.doFilter(request,response);
-         return;
-     }
+            // If token is not present in header
+            if (tokenFromHeader == null || !tokenFromHeader.startsWith("Bearer")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-     String token = tokenFromHeader.split(" ")[1];
+            String token = tokenFromHeader.split(" ")[1];
 
-     JWTUserPrinciple userPrinciple = authUtil.verifyAccessToken(token);
+            JWTUserPrinciple userPrinciple = authUtil.verifyAccessToken(token);
 
-     if(userPrinciple!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                 userPrinciple, null, userPrinciple.authorities()
-         );
+            if (userPrinciple != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userPrinciple, null, userPrinciple.authorities()
+                );
 
-     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-     }
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
 
-        filterChain.doFilter(request,response);
+            filterChain.doFilter(request, response);
 
+        } catch (Exception e) {
+            handlerExceptionResolver.resolveException(request, response, null, e);
+        }
     }
-    catch(Exception e){
-        handlerExceptionResolver.resolveException(request,response,null,e);
-    }
-}}
+}

@@ -1,6 +1,7 @@
 package com.springboot.AI_Code_Generator.service.impl;
 
 import com.springboot.AI_Code_Generator.llm.PromptUtils;
+import com.springboot.AI_Code_Generator.llm.advisors.FileTreeContextAdvisor;
 import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.AiGenerationService;
 import com.springboot.AI_Code_Generator.service.FileService;
@@ -10,6 +11,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 
 import java.util.Map;
@@ -25,6 +27,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     private final ChatClient chatClient;
     private final AuthUtil authUtil;
     private final FileService fileService;
+    private final FileTreeContextAdvisor fileTreeContextAdvisor;
 
     private static final Pattern FILE_TAG_PATTERN = Pattern.compile("<file path=\"([^\"]+)\">(.*?)</file>", Pattern.DOTALL);
 
@@ -33,6 +36,8 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     @Override
     @PreAuthorize("@security.canEditProject(#projectId)")
     public Flux<String> streamResponse(String userPrompt, Long projectId) {
+
+           log.info("Called stream response");
 
             Long userId = authUtil.getCurrentUserId();
             createChatSessionIfNotExists(projectId, userId);
@@ -44,10 +49,15 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
             StringBuilder fullResponseBuffer = new StringBuilder();
 
+
+
             return chatClient.prompt()
                     .system(PromptUtils.CODE_GENERATION_SYSTEM_PROMPT)
                     .user(userPrompt)
-                    .advisors(a -> a.params(advisorParams))
+                    .advisors(a -> {
+                        a.params(advisorParams);
+                        a.advisors(fileTreeContextAdvisor);
+                    })
                     .stream()
                     .chatResponse()
                     .doOnNext(response -> {
@@ -55,7 +65,14 @@ public class AiGenerationServiceImpl implements AiGenerationService {
                                 String content = response.getResult().getOutput().getText();
                                                  fullResponseBuffer.append(content);
                     })
-                    .doOnComplete(() -> System.out.println("COMPLETE"))
+                    .doOnComplete(() -> {
+                        Schedulers.boundedElastic().schedule(() -> {
+                        parseAndSaveFiles(fullResponseBuffer.toString(), projectId);
+//                            long duration = (endTime.get() - startTime.get()) /  1000;
+//                            finalizeChats(userMessage, chatSession, fullResponseBuffer.toString(), duration, usageRef.get());
+                        });
+
+                    })
                     .doOnError(Throwable::printStackTrace)
                     .map(r -> r.getResult().getOutput().getText());
 
@@ -64,11 +81,7 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     // This method will store data in minio, so it is expensive.
     // Instead of running it on the same thread we are running it on different thread
     private void parseAndSaveFiles(String response, Long projectId) {
-    //        String dummy = """
-    //                         files will be stored
-    //                         files will be stored
-    //                         files will be stored
-    //                       """;
+
         Matcher matcher = FILE_TAG_PATTERN.matcher(response);
 
         while(matcher.find())
