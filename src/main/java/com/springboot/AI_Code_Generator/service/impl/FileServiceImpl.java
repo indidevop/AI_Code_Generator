@@ -9,6 +9,7 @@ import com.springboot.AI_Code_Generator.mapper.FileNodeMapper;
 import com.springboot.AI_Code_Generator.repository.ProjectFileRepository;
 import com.springboot.AI_Code_Generator.repository.ProjectRepository;
 import com.springboot.AI_Code_Generator.service.FileService;
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,8 @@ public class FileServiceImpl implements FileService {
     @Value("${minio.project-bucket}")
     private String projectBucket;
 
+    private final String BUCKET_NAME = "projects";
+
     @Override
     public List<FileNode> getFileTree(Long projectId) {
 
@@ -44,8 +47,22 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileContentResponse getFileContent(Long projectId, Long userId, String path) {
-        return null;
+    public FileContentResponse getFileContent(Long projectId, String path) {
+        String objectName = projectId + "/" + path;
+        try (
+                InputStream is = minioClient.getObject(
+                        GetObjectArgs.builder()
+                                .bucket(BUCKET_NAME)
+                                .object(objectName)
+                                .build())) {
+
+            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            return new FileContentResponse(path, content);
+        } catch (Exception e) {
+            log.error("Failed to read file: {}/{}", projectId, path, e);
+            throw new RuntimeException("Failed to read file content", e);
+        }
+
     }
 
     @Override

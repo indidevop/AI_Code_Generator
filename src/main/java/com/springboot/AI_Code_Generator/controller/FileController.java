@@ -31,6 +31,6 @@ public class FileController {
     {
         Long userId=authUtil.getCurrentUserId();
 
-        return ResponseEntity.ok(fileService.getFileContent(projectId, userId, path));
+        return ResponseEntity.ok(fileService.getFileContent(projectId, path));
     }
 }

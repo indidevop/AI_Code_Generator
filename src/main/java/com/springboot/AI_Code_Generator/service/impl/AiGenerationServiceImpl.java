@@ -2,6 +2,7 @@ package com.springboot.AI_Code_Generator.service.impl;
 
 import com.springboot.AI_Code_Generator.llm.PromptUtils;
 import com.springboot.AI_Code_Generator.llm.advisors.FileTreeContextAdvisor;
+import com.springboot.AI_Code_Generator.llm.tools.CodeGenerationTools;
 import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.AiGenerationService;
 import com.springboot.AI_Code_Generator.service.FileService;
@@ -50,10 +51,13 @@ public class AiGenerationServiceImpl implements AiGenerationService {
             StringBuilder fullResponseBuffer = new StringBuilder();
 
 
+           CodeGenerationTools codeGenerationTools = new CodeGenerationTools(fileService,projectId);
+
 
             return chatClient.prompt()
                     .system(PromptUtils.CODE_GENERATION_SYSTEM_PROMPT)
                     .user(userPrompt)
+                    .tools(codeGenerationTools)
                     .advisors(a -> {
                         a.params(advisorParams);
                         a.advisors(fileTreeContextAdvisor);
