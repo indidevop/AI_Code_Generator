@@ -16,6 +16,7 @@ import com.springboot.AI_Code_Generator.repository.ProjectRepository;
 import com.springboot.AI_Code_Generator.repository.UserRepository;
 import com.springboot.AI_Code_Generator.security.AuthUtil;
 import com.springboot.AI_Code_Generator.service.ProjectService;
+import com.springboot.AI_Code_Generator.service.ProjectTemplateService;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectSummaryResponseMapper projectSummaryResponseMapper;
     ProjectMemberRepository projectMemberRepository;
     AuthUtil authUtil;
+    ProjectTemplateService projectTemplateService;
 
     @Override
     public ProjectResponse createProject(ProjectRequest request) {
@@ -70,6 +72,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
 
         projectMemberRepository.save(projectMember);
+
+        projectTemplateService.initializeProjectFromTemplate(p.getId());
 
         return projectMapper.projectToProjectResponse(p);
     }
