@@ -1,17 +1,21 @@
 package com.springboot.AI_Code_Generator.entity;
 
+import com.springboot.AI_Code_Generator.enums.ChatEventType;
 import com.springboot.AI_Code_Generator.enums.MessageRole;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 
+@Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChatMessage {
 
@@ -30,6 +34,10 @@ public class ChatMessage {
 
     @Column(columnDefinition = "text", nullable = false)
     String content;
+
+    @OneToMany(mappedBy = "chatMessage",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("sequenceOrder ASC")
+    List<ChatEvent> events;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
