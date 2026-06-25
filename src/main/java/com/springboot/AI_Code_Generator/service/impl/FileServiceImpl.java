@@ -23,6 +23,8 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -112,13 +114,62 @@ public class FileServiceImpl implements FileService {
 
     }
 
-    private String determineContentType(String path) {
-        String type = URLConnection.guessContentTypeFromName(path);
-        if (type != null) return type;
-        if (path.endsWith(".jsx") || path.endsWith(".ts") || path.endsWith(".tsx")) return "text/javascript";
-        if (path.endsWith(".json")) return "application/json";
-        if (path.endsWith(".css")) return "text/css";
+    private static final Map<String, String> CONTENT_TYPES = Map.ofEntries(
+            Map.entry("html", "text/html; charset=UTF-8"),
+            Map.entry("htm", "text/html; charset=UTF-8"),
 
-        return "text/plain";
+            Map.entry("css", "text/css; charset=UTF-8"),
+
+            Map.entry("js", "text/javascript; charset=UTF-8"),
+            Map.entry("mjs", "text/javascript; charset=UTF-8"),
+            Map.entry("jsx", "text/javascript; charset=UTF-8"),
+            Map.entry("ts", "text/typescript; charset=UTF-8"),
+            Map.entry("tsx", "text/typescript; charset=UTF-8"),
+
+            Map.entry("json", "application/json; charset=UTF-8"),
+
+            Map.entry("svg", "image/svg+xml"),
+            Map.entry("png", "image/png"),
+            Map.entry("jpg", "image/jpeg"),
+            Map.entry("jpeg", "image/jpeg"),
+            Map.entry("gif", "image/gif"),
+            Map.entry("webp", "image/webp"),
+            Map.entry("ico", "image/x-icon"),
+
+            Map.entry("woff", "font/woff"),
+            Map.entry("woff2", "font/woff2"),
+            Map.entry("ttf", "font/ttf"),
+            Map.entry("otf", "font/otf"),
+
+            Map.entry("pdf", "application/pdf"),
+
+            Map.entry("md", "text/markdown; charset=UTF-8"),
+            Map.entry("txt", "text/plain; charset=UTF-8")
+    );
+
+    private String determineContentType(String path) {
+        String extension = getExtension(path);
+
+        String contentType = CONTENT_TYPES.get(extension);
+
+        if (contentType != null) {
+            return contentType;
+        }
+
+        String guessed = URLConnection.guessContentTypeFromName(path);
+
+        return guessed != null
+                ? guessed
+                : "application/octet-stream";
+    }
+
+    private String getExtension(String path) {
+        int lastDot = path.lastIndexOf('.');
+
+        if (lastDot < 0 || lastDot == path.length() - 1) {
+            return "";
+        }
+
+        return path.substring(lastDot + 1).toLowerCase(Locale.ROOT);
     }
 }

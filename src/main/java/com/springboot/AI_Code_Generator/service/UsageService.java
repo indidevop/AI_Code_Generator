@@ -4,7 +4,9 @@ import com.springboot.AI_Code_Generator.dto.subscription.PlanLimitsResponse;
 import com.springboot.AI_Code_Generator.dto.subscription.UsageTodayResponse;
 
 public interface UsageService {
-    UsageTodayResponse getUsageForToday(Long userId);
-
-    PlanLimitsResponse getPlanLimits(Long userId);
+    void recordTokenUsage(Long userId, int actualTokens);
+    Integer checkDailyTokensUsage();
 }
+
+
+

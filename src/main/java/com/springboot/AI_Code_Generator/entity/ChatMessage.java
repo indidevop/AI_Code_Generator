@@ -26,18 +26,18 @@ public class ChatMessage {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumns(
             {
-                    @JoinColumn(name = "projectId", referencedColumnName = "projectId", nullable = false),
-                    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
+                    @JoinColumn(name = "projectId", referencedColumnName = "project_id", nullable = false),
+                    @JoinColumn(name = "userId", referencedColumnName = "user_id", nullable = false)
             }
     )
     ChatSession chatSession;
 
     @Column(columnDefinition = "text", nullable = false)
-    String content;
+    String content;  // Null unless USER role
 
     @OneToMany(mappedBy = "chatMessage",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("sequenceOrder ASC")
-    List<ChatEvent> events;
+    List<ChatEvent> events;  // Null unless ASSISTANT role
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)

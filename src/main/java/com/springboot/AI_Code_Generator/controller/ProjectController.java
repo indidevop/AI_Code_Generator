@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/project")
+@RequestMapping("/api/projects")
 @FieldDefaults(makeFinal = true, level= AccessLevel.PRIVATE)
 public class ProjectController {
 

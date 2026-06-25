@@ -18,12 +18,23 @@ public class CodeGenerationTools {
 
     @Tool(name = "read_files",
             description = "Read the content of files. Only input the file names present inside the FILE_TREE. DO NOT input any path which is not present under the FILE_TREE.")
-    public List<String> readFiles(@ToolParam(description = "List of relative paths (e.g., ['src/App.tsx'])") List<String> paths){
+    public List<String> readFiles(
+            @ToolParam(
+                    description = """
+                            List of project-relative file paths to read.
+                            
+                            Paths must be relative to the project root and use forward slashes.
+                            
+                            Example:
+                            ["html/index.html", "css/main.css", "js/main.js"]
+                            """
+            ) List<String>paths)
+
+    {
         List<String> result = new ArrayList<>();
 
-        for(String path : paths)
-        {
-            String cleanPath = path.startsWith("/")?path.substring(1):path;
+        for (String path : paths) {
+            String cleanPath = path.startsWith("/") ? path.substring(1) : path;
 
             log.info("Requested file: {}", cleanPath);
 

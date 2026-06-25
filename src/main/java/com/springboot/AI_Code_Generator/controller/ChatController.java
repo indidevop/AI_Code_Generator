@@ -32,7 +32,7 @@ public class ChatController {
 
     }
 
-    @PostMapping(value = "/projects/{projectId}")
+    @PostMapping(value = "/projects/{projectId}/history")
     public ResponseEntity<List<ChatResponse>> getChatHistory(Long projectId){
         return ResponseEntity.ok(chatService.getChatHistory(projectId));
     }
