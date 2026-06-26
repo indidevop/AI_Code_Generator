@@ -2,6 +2,7 @@ package com.springboot.AI_Code_Generator.service.impl;
 
 import com.springboot.AI_Code_Generator.dto.file.FileContentResponse;
 import com.springboot.AI_Code_Generator.dto.project.FileNode;
+import com.springboot.AI_Code_Generator.dto.project.FileTreeResponse;
 import com.springboot.AI_Code_Generator.entity.Project;
 import com.springboot.AI_Code_Generator.entity.ProjectFile;
 import com.springboot.AI_Code_Generator.error.ResourceNotFoundException;
@@ -42,10 +43,11 @@ public class FileServiceImpl implements FileService {
     private final String BUCKET_NAME = "projects";
 
     @Override
-    public List<FileNode> getFileTree(Long projectId) {
+    public FileTreeResponse getFileTree(Long projectId) {
 
         List<ProjectFile> filesList = projectFileRepository.findByProjectId(projectId);
-        return fileNodeMapper.toListOfFileNode(filesList);
+        List<FileNode> fileNodeList = fileNodeMapper.toListOfFileNode(filesList);
+        return new FileTreeResponse(fileNodeList);
     }
 
     @Override

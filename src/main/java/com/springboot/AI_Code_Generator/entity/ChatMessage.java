@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 import java.util.List;
 
+@ToString
 @Entity
 @Getter
 @Setter
@@ -30,6 +31,7 @@ public class ChatMessage {
                     @JoinColumn(name = "userId", referencedColumnName = "user_id", nullable = false)
             }
     )
+    @ToString.Exclude
     ChatSession chatSession;
 
     @Column(columnDefinition = "text", nullable = false)
@@ -37,6 +39,7 @@ public class ChatMessage {
 
     @OneToMany(mappedBy = "chatMessage",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("sequenceOrder ASC")
+    @ToString.Exclude
     List<ChatEvent> events;  // Null unless ASSISTANT role
 
     @Enumerated(value = EnumType.STRING)
@@ -49,5 +52,6 @@ public class ChatMessage {
 
     @CreationTimestamp
     Instant createdAt;
+
 }
 

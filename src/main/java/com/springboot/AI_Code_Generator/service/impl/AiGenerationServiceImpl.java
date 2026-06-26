@@ -1,5 +1,6 @@
 package com.springboot.AI_Code_Generator.service.impl;
 
+import com.springboot.AI_Code_Generator.dto.chat.StreamResponse;
 import com.springboot.AI_Code_Generator.entity.*;
 import com.springboot.AI_Code_Generator.enums.ChatEventType;
 import com.springboot.AI_Code_Generator.enums.MessageRole;
@@ -54,9 +55,11 @@ public class AiGenerationServiceImpl implements AiGenerationService {
     // Flux is an async stream data type
     @Override
     @PreAuthorize("@security.canEditProject(#projectId)")
-    public Flux<String> streamResponse(String userPrompt, Long projectId) {
+    public Flux<StreamResponse> streamResponse(String userPrompt, Long projectId) {
 
         log.info("Called stream response");
+
+//        usageService.checkDailyTokensUsage();
 
         AtomicReference<Long> startTime = new AtomicReference<>(System.currentTimeMillis());
         AtomicReference<Long> endTime = new AtomicReference<>(0L);
@@ -110,7 +113,10 @@ public class AiGenerationServiceImpl implements AiGenerationService {
 
                 })
                 .doOnError(Throwable::printStackTrace)
-                .map(r -> r.getResult().getOutput().getText());
+                .map(chatResponse -> {
+                    String text = chatResponse.getResult().getOutput().getText();
+                    return new StreamResponse(text!=null?text:" ");
+                });
 
     }
 

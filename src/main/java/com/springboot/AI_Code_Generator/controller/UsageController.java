@@ -18,15 +18,15 @@ public class UsageController {
     private final UsageService usageService;
     private final AuthUtil authUtil;
 
-//    @GetMapping("/today")
-//    public ResponseEntity<UsageTodayResponse> checkDailyTokensUsage(){
-//        return ResponseEntity.ok(usageService.checkDailyTokensUsage());
-//    }
-//
-//    @GetMapping("/limits")
-//    public ResponseEntity<PlanLimitsResponse> getPlanLimits(){
-//        Long userId=authUtil.getCurrentUserId();
-//        return ResponseEntity.ok(usageService.getPlanLimits(userId));
-//    }
+    @GetMapping("/today")
+    public ResponseEntity<UsageTodayResponse> checkDailyTokensUsage(){
+        return ResponseEntity.ok(usageService.checkDailyTokensUsage());
+    }
+
+    @GetMapping("/limits")
+    public ResponseEntity<PlanLimitsResponse> getPlanLimits(){
+        Long userId=authUtil.getCurrentUserId();
+        return ResponseEntity.ok(usageService.getPlanLimits(userId));
+    }
 
 }

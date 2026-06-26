@@ -1,5 +1,6 @@
 package com.springboot.AI_Code_Generator.security;
 
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,8 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement((sessionConfig)->sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth)->auth
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/auth/**","/webhooks/**","/error").permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,6 +1,5 @@
 package com.springboot.AI_Code_Generator.dto.chat;
 
-import com.springboot.AI_Code_Generator.entity.ChatEvent;
 import com.springboot.AI_Code_Generator.entity.ChatSession;
 import com.springboot.AI_Code_Generator.enums.MessageRole;
 
@@ -12,7 +11,7 @@ public record ChatResponse(
         Long id,
         ChatSession chatSession,
         String content,
-        List<ChatEvent> events,
+        List<ChatEventResponse> events,
         MessageRole role,
         String toolCalls, // JSON Array of Tools Called
         Integer tokensUsed,
